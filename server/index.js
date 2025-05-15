@@ -21,8 +21,10 @@ mongoose
 const authRoutes = require("./src/routes/auth.routes");
 const otpRoutes = require("./src/routes/otp.routes")
 const movieRoutes = require("./src/routes/movie.routes");
+const favoriteRoutes = require("./src/routes/favorite.routes");
 
 app.use("/api", authRoutes);
 app.use("/api", otpRoutes)
 app.use("/api", movieRoutes);
+app.use("/api/favorites", favoriteRoutes);
 app.listen(PORT, () => {});
