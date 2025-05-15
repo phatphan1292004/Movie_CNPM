@@ -1,5 +1,4 @@
 import BackgroundWithOverlay from "../module/details/BackgroundWithOverlay";
-import Button from "../components/button/Button";
 import Layout from "../components/layout/Layout";
 import React, { useEffect, useState } from "react";
 import PosterMovie from "../module/details/PosterMovie";
@@ -10,6 +9,10 @@ import { useParams } from "react-router-dom";
 import { getMovieDetailBySlug, getRelatedMovies } from "../axios/movieapi";
 import EpisodeList from "../module/details/EpisodeList";
 
+import { toast } from "react-toastify";
+import axios from "axios";
+import SelectCollectionModal from "../modal/SelectCollectionModal";
+
 const MovieDetail = () => {
   const { slug } = useParams();
   const [movie, setMovie] = useState(null);
@@ -17,11 +20,11 @@ const MovieDetail = () => {
   const [relatedMovies, setRelatedMovies] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
-    setIsLoading(true); 
+    setIsLoading(true);
     const fetchMovie = async () => {
       try {
         const data = await getMovieDetailBySlug(slug);
@@ -35,10 +38,10 @@ const MovieDetail = () => {
             const related = await getRelatedMovies(categorySlug, slug);
             setRelatedMovies(related);
           }
-          setIsLoading(false); 
+          setIsLoading(false);
         }
       } catch (err) {
-        setIsLoading(false); 
+        setIsLoading(false);
         console.error("❌ Error loading movie from phimapi.com:", err);
       }
     };
@@ -50,21 +53,32 @@ const MovieDetail = () => {
     };
   }, [slug]);
 
-  // Hàm thêm/xoá slug khỏi localStorage
   const toggleFavorite = () => {
-    const saved = JSON.parse(localStorage.getItem("favorites") || "[]");
-    const updated = isFavorite
-      ? saved.filter((s) => s !== slug)
-      : [...saved, slug];
-    localStorage.setItem("favorites", JSON.stringify(updated));
-    setIsFavorite(!isFavorite);
+    setShowModal(true); // mở modal
   };
 
-
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("favorites") || "[]");
-    setIsFavorite(saved.includes(slug));
-  }, [slug]);  
+    const checkInCollections = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user?.id || !slug) return;
+  
+      try {
+        const res = await axios.get(`/api/favorites/${user.id}/collections`);
+        const collections = res.data.collections || [];
+  
+        const exists = collections.some((c) =>
+          c.movies.some((m) => m.slug === slug)
+        );
+  
+        setIsFavorite(exists);
+      } catch (err) {
+        console.error("Lỗi khi kiểm tra yêu thích:", err);
+      }
+    };
+  
+    checkInCollections();
+  }, [slug]);
+  
 
   if (isLoading) {
     return (
@@ -74,7 +88,7 @@ const MovieDetail = () => {
       </div>
     );
   }
-  
+
   return (
     <>
       {movie && (
@@ -105,6 +119,18 @@ const MovieDetail = () => {
               </div>
             </div>
           </div>
+
+          {/* ✅ Modal chọn bộ sưu tập */}
+          <SelectCollectionModal
+            show={showModal}
+            setShow={setShowModal}
+            slug={slug}
+            movieInfo={{
+              title: movie.name,
+              img: movie.thumb_url,
+              slug: slug,
+            }}
+          />
         </Layout>
       )}
     </>
