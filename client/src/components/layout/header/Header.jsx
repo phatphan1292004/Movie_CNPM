@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isScroll, setIsScroll] = useState(false);
-  const menuItems = ["Home", "Features", "Pages", "Blogs"];
+  const menuItems = ["Home", "Features", "Pages", "Favorites"];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,19 +33,31 @@ const Header = () => {
           </Link>
 
           <div className="flex gap-10 items-center text-blue-500">
-            {menuItems.map((item) =>
-              item === "Features" ? (
-                renderFeaturesMenu()
-              ) : (
-                // Các item khác
+            {menuItems.map((item) => {
+              if (item === "Features") return renderFeaturesMenu();
+
+              if (item === "Favorites") {
+                return (
+                  <Link
+                    to="/danh-sach-uu-thich"
+                    key={item}
+                    className="text-white font-semibold cursor-pointer hover:text-primary transition"
+                  >
+                    {item}
+                  </Link>
+                );
+              }
+
+              // Các item khác như Home, Pages
+              return (
                 <span
                   key={item}
                   className="text-white font-semibold cursor-pointer hover:text-primary transition"
                 >
                   {item}
                 </span>
-              )
-            )}
+              );
+            })}
           </div>
         </div>
         <div className="flex gap-4">

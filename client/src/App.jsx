@@ -7,6 +7,9 @@ import MovieDetail from "./pages/MovieDetail";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MovieListPage from "./pages/MovieListPage";
+import Favorite from "./pages/Favorite";
+import OtpPage from "./pages/OtpPage";
+import PrivateRoute from "./components/PrivateRoute";
 function App() {
   return (
     <>
@@ -14,6 +17,7 @@ function App() {
         <Route path="/" element={<HomePage></HomePage>}></Route>
         <Route path="/login" element={<Login></Login>}></Route>
         <Route path="/sign-up" element={<SignUp></SignUp>}></Route>
+        <Route path="/verify-otp" element={<OtpPage></OtpPage>}></Route>
         <Route path="/phim/:slug" element={<MovieDetail></MovieDetail>}></Route>
         <Route
           path="/danh-sach/phim-moi-cap-nhat"
@@ -37,6 +41,14 @@ function App() {
           path="/danh-sach/hoat-hinh"
           element={<MovieListPage title="Anime" fetchType="hoat-hinh" />}
         />
+        <Route
+          path="/danh-sach-uu-thich"
+          element={
+            <PrivateRoute>
+              <Favorite />
+            </PrivateRoute>
+          }
+        ></Route>
       </Routes>
       <ToastContainer />
     </>
