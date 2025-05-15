@@ -32,7 +32,16 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Mật khẩu không đúng" });
     }
 
-    return res.status(200).json({ message: "Đăng nhập thành công." });
+    return res.status(200).json({
+      message: "Đăng nhập thành công.",
+      user: {
+        id: user._id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ message: "Lỗi server" });
   }
