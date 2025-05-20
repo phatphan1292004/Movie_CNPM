@@ -22,9 +22,11 @@ const authRoutes = require("./src/routes/auth.routes");
 const otpRoutes = require("./src/routes/otp.routes")
 const movieRoutes = require("./src/routes/movie.routes");
 const favoriteRoutes = require("./src/routes/favorite.routes");
+const reviewRoutes = require("./src/routes/review.routes");
 
 app.use("/api", authRoutes);
 app.use("/api", otpRoutes)
 app.use("/api", movieRoutes);
 app.use("/api/favorites", favoriteRoutes);
+app.use("/api/review", reviewRoutes);
 app.listen(PORT, () => {});
