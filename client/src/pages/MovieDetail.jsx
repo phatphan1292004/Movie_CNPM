@@ -84,7 +84,7 @@ const MovieDetail = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await axios.post("/review/get-review-slug", { slug });
+        const res = await axios.post("/api/review/get-review-slug", { slug });
         setReviews(res.data);
       } catch (err) {
         console.error("❌ Lỗi lấy bình luận:", err);
