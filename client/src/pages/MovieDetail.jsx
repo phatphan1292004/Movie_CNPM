@@ -1,4 +1,5 @@
 import BackgroundWithOverlay from "../module/details/BackgroundWithOverlay";
+import Button from "../components/button/Button";
 import Layout from "../components/layout/Layout";
 import React, { useEffect, useState } from "react";
 import PosterMovie from "../module/details/PosterMovie";
@@ -8,12 +9,13 @@ import ReviewForm from "../module/details/ReviewForm";
 import { useParams } from "react-router-dom";
 import { getMovieDetailBySlug, getRelatedMovies } from "../axios/movieapi";
 import EpisodeList from "../module/details/EpisodeList";
-
 import { toast } from "react-toastify";
 import axios from "axios";
+import ReviewList from "../module/details/ReviewList";
 import SelectCollectionModal from "../modal/SelectCollectionModal";
 
 const MovieDetail = () => {
+  const [reviews, setReviews] = useState([]);
   const { slug } = useParams();
   const [movie, setMovie] = useState(null);
   const [episodes, setEpisodes] = useState([]);
@@ -61,30 +63,42 @@ const MovieDetail = () => {
     const checkInCollections = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user?.id || !slug) return;
-  
+
       try {
-        const res = await axios.get(`/api/favorites/${user.id}/collections`);
+        const res = await axios.get(`/favorites/${user.id}/collections`);
         const collections = res.data.collections || [];
-  
+
         const exists = collections.some((c) =>
           c.movies.some((m) => m.slug === slug)
         );
-  
+
         setIsFavorite(exists);
       } catch (err) {
         console.error("Lỗi khi kiểm tra yêu thích:", err);
       }
     };
-  
+
     checkInCollections();
   }, [slug]);
-  
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await axios.post("/review/get-review-slug", { slug });
+        setReviews(res.data);
+      } catch (err) {
+        console.error("❌ Lỗi lấy bình luận:", err);
+      }
+    };
+    if (slug) fetchReviews();
+  }, [slug]);
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-black/80 z-[9999] flex flex-col items-center justify-center text-primary">
         <div className="w-10 h-10 border-4 border-t-transparent border-primary rounded-full animate-spin mb-4"></div>
-        <p className="text-lg font-semibold opacity-80">Đang tải dữ liệu phim...</p>
+        <p className="text-lg font-semibold opacity-80">
+          Đang tải dữ liệu phim...
+        </p>
       </div>
     );
   }
@@ -114,14 +128,15 @@ const MovieDetail = () => {
                 )}
 
                 <div className="mb-4 mt-20">
-                  <ReviewForm></ReviewForm>
+                  <ReviewForm slug={slug}></ReviewForm>
+                  <ReviewList reviews={reviews} />
                 </div>
               </div>
             </div>
           </div>
 
           {/* ✅ Modal chọn bộ sưu tập */}
-          <SelectCollectionModal
+         <SelectCollectionModal
             show={showModal}
             setShow={setShowModal}
             slug={slug}
