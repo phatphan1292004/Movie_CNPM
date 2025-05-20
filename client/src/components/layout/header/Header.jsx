@@ -3,11 +3,25 @@ import Input from "../../input/Input";
 import Button from "../../button/Button";
 import Category from "../../category/Category";
 import { Link } from "react-router-dom";
+// Thêm useNavigate để chuyển trang sau khi tìm kiếm
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isScroll, setIsScroll] = useState(false);
   const menuItems = ["Home", "Features", "Pages", "Favorites"];
-
+  const menuItems = ["Home", "Features", "Pages", "Blogs"];
+    // State lưu từ khóa người dùng nhập vào ô tìm kiếm
+  const [searchKeyword, setSearchKeyword] = useState("");
+    // Dùng để chuyển trang khi người dùng tìm kiếm
+  const navigate = useNavigate();
+  
+    // Hàm xử lý khi người dùng nhấn phím Enter trong ô tìm kiếm
+  const handleSearch = (e) => {
+    if (e.key === "Enter" && searchKeyword.trim()) {
+       // Điều hướng đến trang tìm kiếm và truyền keyword qua URL
+      navigate(`/search?keyword=${encodeURIComponent(searchKeyword.trim())}`);
+    }
+  };
   useEffect(() => {
     const handleScroll = () => {
       setIsScroll(window.scrollY > 60);
@@ -61,7 +75,8 @@ const Header = () => {
           </div>
         </div>
         <div className="flex gap-4">
-          <Input inputClass="transparent" placeholder="Search..."></Input>
+          <Input inputClass="transparent" placeholder="Search..." value={searchKeyword} onChange={(e) => 
+          setSearchKeyword(e.target.value)} onKeyDown={handleSearch}/>
           <Button to="/login">Login</Button>
         </div>
       </div>
