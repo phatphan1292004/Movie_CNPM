@@ -8,7 +8,6 @@ import ReviewForm from "../module/details/ReviewForm";
 import { useParams } from "react-router-dom";
 import { getMovieDetailBySlug, getRelatedMovies } from "../axios/movieapi";
 import EpisodeList from "../module/details/EpisodeList";
-
 import { toast } from "react-toastify";
 import axios from "axios";
 import SelectCollectionModal from "../modal/SelectCollectionModal";
@@ -31,7 +30,7 @@ const MovieDetail = () => {
         if (isMounted) {
           setMovie(data?.movie || null);
           setEpisodes(data?.episodes || []);
-          console.log("✅ Movie data:", data);
+          console.log("Movie data:", data);
 
           const categorySlug = data?.movie?.category?.[0]?.slug;
           if (categorySlug) {
@@ -42,7 +41,7 @@ const MovieDetail = () => {
         }
       } catch (err) {
         setIsLoading(false);
-        console.error("❌ Error loading movie from phimapi.com:", err);
+        console.error("Error loading movie from phimapi.com:", err);
       }
     };
 
@@ -120,7 +119,7 @@ const MovieDetail = () => {
             </div>
           </div>
 
-          {/* ✅ Modal chọn bộ sưu tập */}
+          {/*Modal chọn bộ sưu tập */}
           <SelectCollectionModal
             show={showModal}
             setShow={setShowModal}
