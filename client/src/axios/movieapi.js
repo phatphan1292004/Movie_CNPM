@@ -103,7 +103,21 @@ export const getMovieListByType = async (type, page = 1) => {
   }
 };
 
-
+// gọi dữ liệu từ API https://phimapi.com, bạn có thể tạo một hàm searchMovies sử dụng endpoint
+export const searchMovies = async (keyword, page = 1) => {
+  try {
+    const res = await axios.get(`/api/tim-kiem`, {
+      params: {
+        keyword,
+        page,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("❌ searchMovies error:", error);
+    return null;
+  }
+};
 
 
 
