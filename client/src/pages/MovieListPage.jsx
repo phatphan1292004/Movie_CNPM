@@ -19,7 +19,7 @@ const MovieListPage = ({ title, fetchType }) => {
         setMovies(res?.data?.items || []);
         setTotalPages(res?.data?.params?.pagination?.totalPages || 1);
       } catch (error) {
-        console.error("❌ Failed to fetch movies:", error);
+        console.error("Failed to fetch movies:", error);
       } finally {
         setLoading(false);
         window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top
@@ -34,11 +34,11 @@ const MovieListPage = ({ title, fetchType }) => {
         <h2 className="text-3xl font-bold mb-6 text-white">{title}</h2>
 
         {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {Array.from({ length: 10 }).map((_, index) => (
-                  <MovieCardSkeleton height={"h-[200px]"} />
-              ))}
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {Array.from({ length: 10 }).map((_, index) => (
+              <MovieCardSkeleton height={"h-[200px]"} />
+            ))}
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">

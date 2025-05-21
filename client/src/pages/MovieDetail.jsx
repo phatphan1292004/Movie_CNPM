@@ -33,7 +33,7 @@ const MovieDetail = () => {
         if (isMounted) {
           setMovie(data?.movie || null);
           setEpisodes(data?.episodes || []);
-          console.log("✅ Movie data:", data);
+          console.log("Movie data:", data);
 
           const categorySlug = data?.movie?.category?.[0]?.slug;
           if (categorySlug) {
@@ -44,7 +44,7 @@ const MovieDetail = () => {
         }
       } catch (err) {
         setIsLoading(false);
-        console.error("❌ Error loading movie from phimapi.com:", err);
+        console.error("Error loading movie from phimapi.com:", err);
       }
     };
 
@@ -134,8 +134,7 @@ const MovieDetail = () => {
               </div>
             </div>
           </div>
-
-          {/* ✅ Modal chọn bộ sưu tập */}
+          {/*  Modal chọn bộ sưu tập */}
          <SelectCollectionModal
             show={showModal}
             setShow={setShowModal}
