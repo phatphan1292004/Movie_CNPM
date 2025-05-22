@@ -5,8 +5,10 @@ import Category from "../../category/Category";
 import { Link } from "react-router-dom";
 // Thêm useNavigate để chuyển trang sau khi tìm kiếm
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../../../store/useUserStore";
 
 const Header = () => {
+  const { user } = useUserStore();
   const [isScroll, setIsScroll] = useState(false);
   const menuItems = ["Home", "Features", "Pages", "Favorites"];
     // State lưu từ khóa người dùng nhập vào ô tìm kiếm
@@ -76,7 +78,17 @@ const Header = () => {
         <div className="flex gap-4">
           <Input inputClass="transparent" placeholder="Search..." value={searchKeyword} onChange={(e) => 
           setSearchKeyword(e.target.value)} onKeyDown={handleSearch}/>
-          <Button to="/login">Login</Button>
+          {user ? (
+            <Link to="/profile">
+              <img
+                src={user.avatar || "https://i.imgur.com/6VBx3io.png"}
+                alt="Avatar"
+                className="w-25 h-25 rounded-full object-cover border-2 border-primary hover:scale-105 transition"
+              />
+            </Link>
+          ) : (
+            <Button to="/login">Login</Button>
+          )}
         </div>
       </div>
     </header>
