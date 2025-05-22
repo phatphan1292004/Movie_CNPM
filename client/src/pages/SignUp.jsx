@@ -11,6 +11,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import OtpPage from "./OtpPage";
 import useSignUpStore from "../store/useSignupStore";
+import axiosClient from "../axios/axiosClient";
 
 const schema = yup.object({
   name: yup.string().required("Vui lòng nhập họ và tên"),
@@ -69,7 +70,7 @@ const SignUp = () => {
 
   const handleSignUp = async (data) => {
     try {
-      const res = await axios.post("/api/send-otp", {
+      const res = await axiosClient.post("/send-otp", {
         email: data.email,
       });
 

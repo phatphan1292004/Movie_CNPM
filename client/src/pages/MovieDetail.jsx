@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import ReviewList from "../module/details/ReviewList";
 import SelectCollectionModal from "../modal/SelectCollectionModal";
+import axiosClient from "../axios/axiosClient";
 
 const MovieDetail = () => {
   const [reviews, setReviews] = useState([]);
@@ -65,7 +66,7 @@ const MovieDetail = () => {
       if (!user?.id || !slug) return;
 
       try {
-        const res = await axios.get(`/favorites/${user.id}/collections`);
+        const res = await axiosClient.get(`/favorites/${user.id}/collections`);
         const collections = res.data.collections || [];
 
         const exists = collections.some((c) =>
@@ -84,7 +85,7 @@ const MovieDetail = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await axios.post("/api/review/get-review-slug", { slug });
+        const res = await axiosClient.post("/review/get-review-slug", { slug });
         setReviews(res.data);
       } catch (err) {
         console.error("❌ Lỗi lấy bình luận:", err);
@@ -135,7 +136,7 @@ const MovieDetail = () => {
             </div>
           </div>
           {/*  Modal chọn bộ sưu tập */}
-         <SelectCollectionModal
+        <SelectCollectionModal
             show={showModal}
             setShow={setShowModal}
             slug={slug}

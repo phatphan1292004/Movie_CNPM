@@ -2,7 +2,7 @@ import axiosClient from "../axios/axiosClient";
 
 export const getNewMovie = async (page = 1) => {
   try {
-    const res = await axiosClient.get(`/api/danh-sach/phim-moi-cap-nhat`, {
+    const res = await axiosClient.get(`/danh-sach/phim-moi-cap-nhat`, {
       params: { page },
     });
     return res.data;
