@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "../components/layout/Layout";
-import Banner from "../components/banner-trailer/banner";
+import Banner from "../components/banner-trailer/Banner";
 import TrendingMovie from "../module/home/TrendingMovie";
 import TVShow from "../module/home/TVShow";
 import TopArtist from "../module/home/TopArtist";
