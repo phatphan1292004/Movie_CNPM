@@ -3,6 +3,7 @@ import RatingStars from "./RatingStars";
 import Button2 from "../../components/button/Button2";
 import axios from "axios";
 import { toast } from "react-toastify";
+import axiosClient from "../../axios/axiosClient";
 
 const ReviewForm = ({slug}) => {
   const [rating, setRating] = useState(0);
@@ -17,7 +18,7 @@ const ReviewForm = ({slug}) => {
     }
 
     try {
-      const res = await axios.post("/api/review/add-review", {
+      const res = await axiosClient.post("/review/add-review", {
         userId: user.id,
         name: user.name,
         slug,
