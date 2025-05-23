@@ -1,12 +1,8 @@
-import axios from "axios";
-
-const BASE_URL = "https://phimapi.com";
-const TMDB_API_KEY = "1ddcfbfdf5ba5f0ad55f5714fab7fa0f";
-
+import axiosClient from "../axios/axiosClient";
 
 export const getNewMovie = async (page = 1) => {
   try {
-    const res = await axios.get(`/api/danh-sach/phim-moi-cap-nhat`, {
+    const res = await axiosClient.get(`/danh-sach/phim-moi-cap-nhat`, {
       params: { page },
     });
     return res.data;
@@ -19,7 +15,7 @@ export const getNewMovie = async (page = 1) => {
 
 export const getSeriesMovies = async (page = 1) => {
   try {
-    const res = await axios.get(`/api/danh-sach/phim-bo`, {
+    const res = await axiosClient.get(`/danh-sach/phim-bo`, {
       params: { page },
     });
     return res.data;
@@ -31,7 +27,7 @@ export const getSeriesMovies = async (page = 1) => {
 
 export const getSingleMovies = async (page = 1) => {
   try {
-    const res = await axios.get(`/api/danh-sach/phim-le`, {
+    const res = await axiosClient.get(`/danh-sach/phim-le`, {
       params: { page },
     });
     return res.data;
@@ -43,7 +39,7 @@ export const getSingleMovies = async (page = 1) => {
 
 export const getAnimeMovies = async (page = 1) => {
   try {
-    const res = await axios.get(`/api/danh-sach/hoat-hinh`, {
+    const res = await axiosClient.get(`/danh-sach/hoat-hinh`, {
       params: { page },
     });
     return res.data;
@@ -56,7 +52,7 @@ export const getAnimeMovies = async (page = 1) => {
 
 export const getTVShowMovies = async (page = 1) => {
   try {
-    const res = await axios.get(`/api/danh-sach/tv-shows`, {
+    const res = await axiosClient.get(`/danh-sach/tv-shows`, {
       params: { page },
     });
     return res.data;
@@ -68,7 +64,7 @@ export const getTVShowMovies = async (page = 1) => {
 
 export const getMovieDetailBySlug = async (slug) => {
   try {
-    const res = await axios.get(`/api/phim/${slug}`);
+    const res = await axiosClient.get(`/phim/${slug}`);
     return res.data;
   } catch (error) {
     console.error("❌ getMovieDetailBySlug error:", error);
@@ -78,7 +74,7 @@ export const getMovieDetailBySlug = async (slug) => {
 
 export const getRelatedMovies = async (categorySlug, currentMovieSlug) => {
   try {
-    const res = await axios.get(`/api/tim-kiem`, {
+    const res = await axiosClient.get(`/tim-kiem`, {
       params: { keyword: categorySlug },
     });
 
@@ -93,7 +89,7 @@ export const getRelatedMovies = async (categorySlug, currentMovieSlug) => {
 
 export const getMovieListByType = async (type, page = 1) => {
   try {
-    const res = await axios.get(`/api/danh-sach/${type}`, {
+    const res = await axiosClient.get(`/danh-sach/${type}`, {
       params: { page },
     });
     return res.data;
@@ -106,7 +102,7 @@ export const getMovieListByType = async (type, page = 1) => {
 // gọi dữ liệu từ API https://phimapi.com, bạn có thể tạo một hàm searchMovies sử dụng endpoint
 export const searchMovies = async (keyword, page = 1) => {
   try {
-    const res = await axios.get(`/api/tim-kiem`, {
+    const res = await axiosClient.get(`/tim-kiem`, {
       params: {
         keyword,
         page,
