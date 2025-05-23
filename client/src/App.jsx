@@ -12,6 +12,7 @@ import OtpPage from "./pages/OtpPage";
 import PrivateRoute from "./components/PrivateRoute";
 // import trang seachpage
 import SearchPage from "./pages/SearchPage";
+import UserProfile from "./pages/UserProfie";
 
 function App() {
   return (

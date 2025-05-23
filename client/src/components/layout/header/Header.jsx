@@ -3,28 +3,24 @@ import Input from "../../input/Input";
 import Button from "../../button/Button";
 import Category from "../../category/Category";
 import { Link } from "react-router-dom";
-
-// Thêm useNavigate để chuyển trang sau khi tìm kiếm
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../../../store/useUserStore";
+import UserDropdown from "./UserDropdown";
 
 const Header = () => {
   const { user } = useUserStore();
   const [isScroll, setIsScroll] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const menuItems = ["Home", "Features", "Pages", "Favorites"];
-
-    // State lưu từ khóa người dùng nhập vào ô tìm kiếm
   const [searchKeyword, setSearchKeyword] = useState("");
-    // Dùng để chuyển trang khi người dùng tìm kiếm
   const navigate = useNavigate();
-  
-    // Hàm xử lý khi người dùng nhấn phím Enter trong ô tìm kiếm
+
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchKeyword.trim()) {
-       // Điều hướng đến trang tìm kiếm và truyền keyword qua URL
       navigate(`/search?keyword=${encodeURIComponent(searchKeyword.trim())}`);
     }
   };
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScroll(window.scrollY > 60);
@@ -33,10 +29,12 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   return (
     <header
-      className={`py-5 fixed z-30 top-0 left-0 w-full transition-all duration-300 ${isScroll ? "bg-[#0F0F2D] backdrop-blur-md shadow-md" : "bg-transparent"
-        }`}
+      className={`py-5 fixed z-30 top-0 left-0 w-full transition-all duration-300 ${
+        isScroll ? "bg-[#0F0F2D] backdrop-blur-md shadow-md" : "bg-transparent"
+      }`}
     >
       <div className="px-20 flex justify-between items-center bg-transparent">
         <div className="flex gap-5 items-center">
@@ -64,7 +62,6 @@ const Header = () => {
                 );
               }
 
-              // Các item khác như Home, Pages
               return (
                 <span
                   key={item}
@@ -76,23 +73,34 @@ const Header = () => {
             })}
           </div>
         </div>
-        <div className="flex gap-4">
-          <Input inputClass="transparent" placeholder="Search..." value={searchKeyword} onChange={(e) => 
-          setSearchKeyword(e.target.value)} onKeyDown={handleSearch}/>
+        <div className="flex gap-4 items-center relative">
+          <Input
+            inputClass="transparent"
+            placeholder="Search..."
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyDown={handleSearch}
+          />
           {user ? (
-            <Link to="/profile">
-              <img
-                src={user.avatar || "https://i.imgur.com/6VBx3io.png"}
-                alt="Avatar"
-                className="w-25 h-25 rounded-full object-cover border-2 border-primary hover:scale-105 transition"
+            <div className="relative">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="focus:outline-none"
+              >
+                <img
+                  src={user.avatar || "https://i.imgur.com/6VBx3io.png"}
+                  alt="Avatar"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-primary hover:scale-105 transition"
+                />
+              </button>
+              <UserDropdown
+                isOpen={isDropdownOpen}
+                onClose={() => setIsDropdownOpen(false)}
               />
-            </Link>
+            </div>
           ) : (
             <Button to="/login">Login</Button>
           )}
-        </div>
-        <div>
-          <Link to="/profile" className="text-white">Tài khoản</Link>
         </div>
       </div>
     </header>

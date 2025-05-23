@@ -78,4 +78,46 @@ router.post("/sign-up", async (req, res) => {
   }
 });
 
+// Get user profile
+router.get("/users/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
+// Update user profile
+router.put("/users/:id", async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    
+    // Kiểm tra email đã tồn tại chưa (nếu email thay đổi)
+    if (email) {
+      const existingUser = await User.findOne({ email, _id: { $ne: req.params.id } });
+      if (existingUser) {
+        return res.status(400).json({ message: "Email đã được sử dụng bởi tài khoản khác" });
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { name, email },
+      { new: true }
+    ).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    return res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
 module.exports = router;
