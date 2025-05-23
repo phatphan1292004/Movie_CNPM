@@ -99,7 +99,7 @@ const Header = () => {
               />
             </div>
           ) : (
-            <Button to="/login">Login</Button>
+            <Button className="h-[50px] w-[120px]" to="/login">Login</Button>
           )}
         </div>
       </div>
