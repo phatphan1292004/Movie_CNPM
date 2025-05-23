@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import axiosClient from "../axios/axiosClient";
 
 const SelectCollectionModal = ({ show, setShow, slug, movieInfo }) => {
   const [collections, setCollections] = useState([]);
@@ -9,7 +10,7 @@ const SelectCollectionModal = ({ show, setShow, slug, movieInfo }) => {
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const res = await axios.get(`/api/favorites/${user.id}/collections`);
+        const res = await axiosClient.get(`/favorites/${user.id}/collections`);
         setCollections(res.data.collections || []);
       } catch (err) {
         toast.error("Không thể tải bộ sưu tập.");
@@ -21,7 +22,7 @@ const SelectCollectionModal = ({ show, setShow, slug, movieInfo }) => {
 
   const handleAddToCollection = async (collectionName) => {
     try {
-      await axios.post(`/api/favorites/${user.id}/collections/add-movie`, {
+      await axiosClient.post(`/favorites/${user.id}/collections/add-movie`, {
         name: collectionName,
         movie: movieInfo,
       });

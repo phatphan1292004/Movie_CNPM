@@ -10,6 +10,9 @@ import MovieListPage from "./pages/MovieListPage";
 import Favorite from "./pages/Favorite";
 import OtpPage from "./pages/OtpPage";
 import PrivateRoute from "./components/PrivateRoute";
+// import trang seachpage
+import SearchPage from "./pages/SearchPage";
+
 function App() {
   return (
     <>
@@ -50,6 +53,8 @@ function App() {
             </PrivateRoute>
           }
         ></Route>
+        {/* ✅ Route mới cho trang tìm kiếm */}
+        <Route path="/search" element={<SearchPage />} />
       </Routes>
       <ToastContainer />
     </>
