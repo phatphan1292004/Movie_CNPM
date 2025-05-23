@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import useUserStore from "../store/useUserStore";
-import axios from "axios";
 import { toast } from "react-toastify";
 import Button2 from "../components/button/Button2";
 import InputField from "../components/input/InputField";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axiosClient from "../axios/axiosClient";
 
 const schema = yup.object({
   name: yup.string().required("Vui lòng nhập họ và tên"),
@@ -35,7 +35,7 @@ const UserProfile = () => {
         const fetchProfile = async () => {
             if (!user?.id) return;
             try {
-                const res = await axios.get(`/api/users/${user.id}`);
+                const res = await axiosClient.get(`/users/${user.id}`);
                 setProfile(res.data);
                 reset({
                     name: res.data.name,
@@ -51,7 +51,7 @@ const UserProfile = () => {
 
     const handleUpdateProfile = async (data) => {
         try {
-            const res = await axios.put(`/api/users/${user.id}`, data);
+            const res = await axiosClient.put(`/users/${user.id}`, data);
             setProfile(res.data);
             setUser({...user, name: res.data.name, email: res.data.email});
             setIsEditing(false);
