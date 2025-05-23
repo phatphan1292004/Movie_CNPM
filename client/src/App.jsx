@@ -17,6 +17,7 @@ function App() {
         <Route path="/" element={<HomePage></HomePage>}></Route>
         <Route path="/login" element={<Login></Login>}></Route>
         <Route path="/sign-up" element={<SignUp></SignUp>}></Route>
+        <Route path="/profile" element={<PrivateRoute> <UserProfile/></PrivateRoute>} ></Route>
         <Route path="/verify-otp" element={<OtpPage></OtpPage>}></Route>
         <Route path="/phim/:slug" element={<MovieDetail></MovieDetail>}></Route>
         <Route

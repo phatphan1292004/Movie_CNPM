@@ -3,7 +3,6 @@ import Input from "../../input/Input";
 import Button from "../../button/Button";
 import Category from "../../category/Category";
 import { Link } from "react-router-dom";
-
 const Header = () => {
   const [isScroll, setIsScroll] = useState(false);
   const menuItems = ["Home", "Features", "Pages", "Favorites"];
@@ -18,9 +17,8 @@ const Header = () => {
   }, []);
   return (
     <header
-      className={`py-5 fixed z-30 top-0 left-0 w-full transition-all duration-300 ${
-        isScroll ? "bg-[#0F0F2D] backdrop-blur-md shadow-md" : "bg-transparent"
-      }`}
+      className={`py-5 fixed z-30 top-0 left-0 w-full transition-all duration-300 ${isScroll ? "bg-[#0F0F2D] backdrop-blur-md shadow-md" : "bg-transparent"
+        }`}
     >
       <div className="px-20 flex justify-between items-center bg-transparent">
         <div className="flex gap-5 items-center">
@@ -63,6 +61,9 @@ const Header = () => {
         <div className="flex gap-4">
           <Input inputClass="transparent" placeholder="Search..."></Input>
           <Button to="/login">Login</Button>
+        </div>
+        <div>
+          <Link to="/profile" className="text-white">Tài khoản</Link>
         </div>
       </div>
     </header>
