@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 const Header = () => {
   const [isScroll, setIsScroll] = useState(false);
   const menuItems = ["Home", "Features", "Pages", "Favorites"];
-  const menuItems = ["Home", "Features", "Pages", "Blogs"];
+  // const menuItems = ["Home", "Features", "Pages", "Blogs"];
     // State lưu từ khóa người dùng nhập vào ô tìm kiếm
   const [searchKeyword, setSearchKeyword] = useState("");
     // Dùng để chuyển trang khi người dùng tìm kiếm
