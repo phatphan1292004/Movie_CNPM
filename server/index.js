@@ -12,8 +12,8 @@ app.use(express.json());
 //Connect MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ Kết nối MongoDB Atlas thành công"))
-  .catch((err) => console.error("❌ Kết nối MongoDB thất bại:", err));
+  .then(() => console.log("Kết nối MongoDB Atlas thành công"))
+  .catch((err) => console.error("Kết nối MongoDB thất bại:", err));
 
 // Route test
 
