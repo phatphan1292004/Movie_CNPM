@@ -6,7 +6,7 @@ const Button = ({ className = "", onClick = () => {}, children, to = "", type="b
     <NavLink to={to}>
       <button
         type={type}
-        className={`px-4 h-[61px] font-semibold rounded-lg bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 shadow-lg hover:opacity-90 transitio ${className || "h-full"}`}
+        className={`px-4 h-[55px] font-semibold rounded-lg bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 shadow-lg hover:opacity-90 transitio ${className || "h-full"}`}
         onClick={onClick}
       >
         {children}

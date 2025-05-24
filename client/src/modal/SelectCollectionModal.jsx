@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import axiosClient from "../axios/axiosClient";
 
-const SelectCollectionModal = ({ show, setShow, slug, movieInfo }) => {
+const SelectCollectionModal = ({ show, setShow, slug, movieInfo,setIsFavorite  }) => {
   const [collections, setCollections] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -21,19 +21,23 @@ const SelectCollectionModal = ({ show, setShow, slug, movieInfo }) => {
   }, [show]);
 
   const handleAddToCollection = async (collectionName) => {
-    try {
-      await axiosClient.post(`/favorites/${user.id}/collections/add-movie`, {
-        name: collectionName,
-        movie: movieInfo,
-      });
+  try {
+    const response = await axiosClient.post(`/favorites/${user.id}/collections/add-movie`, {
+      name: collectionName,
+      movie: movieInfo,
+    });
 
-      toast.success("✅ Đã thêm phim vào bộ sưu tập!");
-      setShow(false);
-    } catch (err) {
-      console.error(err);
-      toast.error("❌ Thêm thất bại.");
-    }
-  };
+    const message = response?.data?.message || "Đã thêm phim vào bộ sưu tập!";
+
+    toast.success(message);
+    setIsFavorite(true);
+    setShow(false);
+  } catch (err) {
+    const errorMessage = err.response?.data?.message || "Thêm thất bại.";
+    toast.error(errorMessage);
+  }
+};
+
 
   if (!show) return null;
 

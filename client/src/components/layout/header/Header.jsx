@@ -83,23 +83,23 @@ const Header = () => {
           />
           {user ? (
             <div className="relative">
-              <button
+              <div
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="focus:outline-none"
+                className="focus:outline-none w-10 h-10 cursor-pointer"
               >
                 <img
                   src={user.avatar || "https://i.imgur.com/6VBx3io.png"}
                   alt="Avatar"
                   className="w-10 h-10 rounded-full object-cover border-2 border-primary hover:scale-105 transition"
                 />
-              </button>
+              </div>
               <UserDropdown
                 isOpen={isDropdownOpen}
                 onClose={() => setIsDropdownOpen(false)}
               />
             </div>
           ) : (
-            <Button className="h-[50px] w-[120px]" to="/login">Login</Button>
+            <Button className="w-[120px]" to="/login">Login</Button>
           )}
         </div>
       </div>
