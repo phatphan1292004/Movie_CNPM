@@ -58,12 +58,13 @@ const MovieDetail = () => {
     };
   }, [slug]);
 
+  //6.1.1 Mở Popup SelectionCollectionModal
   const toggleFavorite = () => {
     if (!user) {
       toast.error("Bạn chưa đăng nhập vào hệ thống");
       return;
     } else {
-      setShowModal(true); // mở modal
+      setShowModal(true); 
     }
   };
 

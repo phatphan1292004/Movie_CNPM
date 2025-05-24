@@ -15,6 +15,7 @@ const PosterMovie = ({ leftOffset, posterUrl, isFavorite, onFavoriteToggle }) =>
           />
 
           <button
+            //6.1.0 Click icon trái tim ở poster phim
             onClick={onFavoriteToggle}
             className="absolute top-3 right-10 text-xl p-2 bg-white/80 hover:bg-white text-red-600 rounded-full shadow-lg transition"
           >

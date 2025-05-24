@@ -8,6 +8,7 @@ const SelectCollectionModal = ({ show, setShow, slug, movieInfo,setIsFavorite  }
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
+    //6.1.2 Gửi request lấy danh sách collection theo userId
     const fetchCollections = async () => {
       try {
         const res = await axiosClient.get(`/favorites/${user.id}/collections`);
@@ -20,6 +21,7 @@ const SelectCollectionModal = ({ show, setShow, slug, movieInfo,setIsFavorite  }
     if (show) fetchCollections();
   }, [show]);
 
+  //Gửi request thêm bộ sưu tập(userId, nameCollection, movieInfo)
   const handleAddToCollection = async (collectionName) => {
   try {
     const response = await axiosClient.post(`/favorites/${user.id}/collections/add-movie`, {
@@ -55,6 +57,7 @@ const SelectCollectionModal = ({ show, setShow, slug, movieInfo,setIsFavorite  }
             {collections.map((c, i) => (
               <li key={i}>
                 <button
+                  //6.1.4 Chọn tên bộ sưu tập muốn lưu và submit
                   onClick={() => handleAddToCollection(c.name)}
                   className="w-full bg-gray-100 hover:bg-purple-100 text-gray-800 font-medium py-2 px-4 rounded-lg transition-all border border-gray-200 text-left"
                 >
