@@ -3,11 +3,12 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import axiosClient from "../axios/axiosClient";
 
-const SelectCollectionModal = ({ show, setShow, slug, movieInfo }) => {
+const SelectCollectionModal = ({ show, setShow, slug, movieInfo,setIsFavorite  }) => {
   const [collections, setCollections] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
+    //6.1.2 Gửi request lấy danh sách collection theo userId
     const fetchCollections = async () => {
       try {
         const res = await axiosClient.get(`/favorites/${user.id}/collections`);
@@ -20,20 +21,25 @@ const SelectCollectionModal = ({ show, setShow, slug, movieInfo }) => {
     if (show) fetchCollections();
   }, [show]);
 
+  //Gửi request thêm bộ sưu tập(userId, nameCollection, movieInfo)
   const handleAddToCollection = async (collectionName) => {
-    try {
-      await axiosClient.post(`/favorites/${user.id}/collections/add-movie`, {
-        name: collectionName,
-        movie: movieInfo,
-      });
+  try {
+    const response = await axiosClient.post(`/favorites/${user.id}/collections/add-movie`, {
+      name: collectionName,
+      movie: movieInfo,
+    });
 
-      toast.success("✅ Đã thêm phim vào bộ sưu tập!");
-      setShow(false);
-    } catch (err) {
-      console.error(err);
-      toast.error("❌ Thêm thất bại.");
-    }
-  };
+    const message = response?.data?.message || "Đã thêm phim vào bộ sưu tập!";
+
+    toast.success(message);
+    setIsFavorite(true);
+    setShow(false);
+  } catch (err) {
+    const errorMessage = err.response?.data?.message || "Thêm thất bại.";
+    toast.error(errorMessage);
+  }
+};
+
 
   if (!show) return null;
 
@@ -51,6 +57,7 @@ const SelectCollectionModal = ({ show, setShow, slug, movieInfo }) => {
             {collections.map((c, i) => (
               <li key={i}>
                 <button
+                  //6.1.4 Chọn tên bộ sưu tập muốn lưu và submit
                   onClick={() => handleAddToCollection(c.name)}
                   className="w-full bg-gray-100 hover:bg-purple-100 text-gray-800 font-medium py-2 px-4 rounded-lg transition-all border border-gray-200 text-left"
                 >

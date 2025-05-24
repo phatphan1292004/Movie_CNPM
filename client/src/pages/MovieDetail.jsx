@@ -14,6 +14,7 @@ import axios from "axios";
 import ReviewList from "../module/details/ReviewList";
 import SelectCollectionModal from "../modal/SelectCollectionModal";
 import axiosClient from "../axios/axiosClient";
+import useUserStore from "../store/useUserStore";
 
 const MovieDetail = () => {
   const [reviews, setReviews] = useState([]);
@@ -24,6 +25,7 @@ const MovieDetail = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const { user } = useUserStore();
 
   useEffect(() => {
     let isMounted = true;
@@ -56,8 +58,14 @@ const MovieDetail = () => {
     };
   }, [slug]);
 
+  //6.1.1 Mở Popup SelectionCollectionModal
   const toggleFavorite = () => {
-    setShowModal(true); // mở modal
+    if (!user) {
+      toast.error("Bạn chưa đăng nhập vào hệ thống");
+      return;
+    } else {
+      setShowModal(true); 
+    }
   };
 
   useEffect(() => {
@@ -136,7 +144,7 @@ const MovieDetail = () => {
             </div>
           </div>
           {/*  Modal chọn bộ sưu tập */}
-        <SelectCollectionModal
+          <SelectCollectionModal
             show={showModal}
             setShow={setShowModal}
             slug={slug}
@@ -145,6 +153,7 @@ const MovieDetail = () => {
               img: movie.thumb_url,
               slug: slug,
             }}
+            setIsFavorite={setIsFavorite}
           />
         </Layout>
       )}

@@ -93,12 +93,12 @@ const UserProfile = () => {
                         defaultValue={profile.email}
                     />
                     <div className="flex gap-4 mt-6">
-                        <Button2 type="submit" className="flex-1">
+                        <Button2 type="submit" className="flex-1 h-[40px]">
                             Lưu thay đổi
                         </Button2>
                         <Button2 
                             type="button" 
-                            className="flex-1 bg-gray-600 hover:bg-gray-700"
+                            className="flex-1 bg-gray-600 hover:bg-gray-700 h-[40px]"
                             onClick={() => setIsEditing(false)}
                         >
                             Hủy
@@ -124,7 +124,7 @@ const UserProfile = () => {
                     </div>
                     <Button2 
                         onClick={() => setIsEditing(true)}
-                        className="w-full mt-4"
+                        className="w-full mt-4 h-[55px]"
                     >
                         Chỉnh sửa thông tin
                     </Button2>
