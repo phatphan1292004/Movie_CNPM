@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axiosClient from "../axios/axiosClient";
+import { NavLink } from "react-router-dom";
 
 const schema = yup.object({
   name: yup.string().required("Vui lòng nhập họ và tên"),
@@ -69,7 +70,12 @@ const UserProfile = () => {
     }
 
     return (
-        <div className="max-w-md mx-auto mt-10 bg-gray-800 text-white p-8 rounded-xl shadow-lg">
+        <div className="max-w-md mx-auto mt-10 bg-gray-800 text-white p-8 rounded-xl shadow-lg relative">
+            <NavLink to="/" className="fixed left-2 top-2 z-50">
+                <Button2 className="!w-auto !px-4 !py-2 text-sm bg-blue-600 hover:bg-blue-700">
+                    ← Quay về trang chủ
+                </Button2>
+            </NavLink>
             <h2 className="text-2xl font-bold mb-6 text-center">Thông tin tài khoản</h2>
             
             {isEditing ? (
