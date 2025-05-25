@@ -39,6 +39,10 @@ router.post("/login", async (req, res) => {
         username: user.username,
         name: user.name,
         email: user.email,
+        phone: user.phone,
+        address: user.address,
+        birthDate: user.birthDate,
+        gender: user.gender,
         role: user.role,
       },
     });
@@ -94,7 +98,7 @@ router.get("/users/:id", async (req, res) => {
 // Update user profile
 router.put("/users/:id", async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, phone, address, birthDate, gender } = req.body;
     
     // Kiểm tra email đã tồn tại chưa (nếu email thay đổi)
     if (email) {
@@ -106,7 +110,7 @@ router.put("/users/:id", async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { name, email },
+      { name, email, phone, address, birthDate, gender },
       { new: true }
     ).select('-password');
 
@@ -115,6 +119,35 @@ router.put("/users/:id", async (req, res) => {
     }
 
     return res.status(200).json(updatedUser);
+  } catch (error) {
+    return res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
+// Change password
+router.put("/users/:id/password", async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Mật khẩu hiện tại không đúng" });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Đổi mật khẩu thành công" });
   } catch (error) {
     return res.status(500).json({ message: "Lỗi server", error: error.message });
   }
