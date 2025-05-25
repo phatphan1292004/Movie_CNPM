@@ -82,7 +82,7 @@ router.post("/sign-up", async (req, res) => {
   }
 });
 
-//8.7.8. API Endpoints:
+//8.7.8. API Endpoints (auth.routes.js):
 // Get user profile
 router.get("/users/:id", async (req, res) => {
   try {
