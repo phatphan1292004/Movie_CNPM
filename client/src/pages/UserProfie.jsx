@@ -13,8 +13,10 @@ const profileSchema = yup.object({
   name: yup.string().required("Vui lòng nhập họ và tên"),
   email: yup.string().email("Email không hợp lệ").required("Vui lòng nhập email"),
   phone: yup.string().matches(/^[0-9]{10}$/, "Số điện thoại không hợp lệ"),
-  address: yup.string(),
-  birthDate: yup.date().max(new Date(), "Ngày sinh không hợp lệ"),
+  birthDate: yup.date()
+    .nullable()
+    .transform((value) => (value === "" ? null : value))
+    .max(new Date(), "Ngày sinh không hợp lệ"),
   gender: yup.string().oneOf(["male", "female", "other"], "Vui lòng chọn giới tính")
 });
 //8.7.7. Validation mật khẩu (UserProfile.jsx):
@@ -52,10 +54,11 @@ const UserProfile = () => {
             name: "",
             email: "",
             phone: "",
-            address: "",
-            birthDate: "",
+            birthDate: new Date().toISOString().split('T')[0],
             gender: ""
-        }
+        },
+        mode: "onChange",
+        reValidateMode: "onChange"
     });
 
     const {
@@ -84,8 +87,7 @@ const UserProfile = () => {
                     name: res.data.name,
                     email: res.data.email,
                     phone: res.data.phone || "",
-                    address: res.data.address || "",
-                    birthDate: res.data.birthDate || "",
+                    birthDate: res.data.birthDate || new Date().toISOString().split('T')[0],
                     gender: res.data.gender || ""
                 });
             } catch (error) {
@@ -97,6 +99,14 @@ const UserProfile = () => {
     }, [user, resetProfile]);
 //8.7.4. Cập nhật thông tin cá nhân :
     const handleUpdateProfile = async (data) => {
+        // Validate trước khi gửi request
+        try {
+            await profileSchema.validate(data, { abortEarly: false });
+        } catch (err) {
+            console.log('Validation Error:', err);
+            return;
+        }
+
         try {
             const res = await axiosClient.put(`/users/${user.id}`, data);
             setProfile(res.data);
@@ -116,7 +126,6 @@ const UserProfile = () => {
             console.log('Validation Error:', err);
             return;
         }
-
         try {
             const response = await axiosClient.put(`/users/${user.id}/password`, {
                 currentPassword: data.currentPassword,
@@ -145,7 +154,7 @@ const UserProfile = () => {
                 </Button2>
             </NavLink>
             <h2 className="text-2xl font-bold mb-6 text-center">Thông tin tài khoản</h2>
-            {/* //8.7.3. Chuyển đổi tab (UserProfile.jsx) */}
+            {/* //8.7.3. Chuyển đổi tab /}
             {/* Tabs */}
             <div className="flex border-b border-gray-700 mb-6">
                 <button
@@ -165,37 +174,57 @@ const UserProfile = () => {
             {activeTab === "profile" ? (
                 isEditing ? (
                     <form onSubmit={handleProfileSubmit(handleUpdateProfile)} className="space-y-4">
-                        <InputField
-                            label="Họ tên"
-                            name="name"
-                            control={profileControl}
-                            defaultValue={profile.name}
-                        />
-                        <InputField
-                            label="Email"
-                            name="email"
-                            control={profileControl}
-                            defaultValue={profile.email}
-                        />
-                        <InputField
-                            label="Số điện thoại"
-                            name="phone"
-                            control={profileControl}
-                            defaultValue={profile.phone || ""}
-                        />
-                        <InputField
-                            label="Địa chỉ"
-                            name="address"
-                            control={profileControl}
-                            defaultValue={profile.address || ""}
-                        />
-                        <InputField
-                            label="Ngày sinh"
-                            name="birthDate"
-                            type="date"
-                            control={profileControl}
-                            defaultValue={profile.birthDate || ""}
-                        />
+                        <div>
+                            <InputField
+                                label="Họ tên"
+                                name="name"
+                                control={profileControl}
+                                defaultValue={profile.name}
+                            />
+                            {profileErrors.name && (
+                                <p className="text-red-500 text-sm mt-1">{profileErrors.name.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <InputField
+                                label="Email"
+                                name="email"
+                                control={profileControl}
+                                defaultValue={profile.email}
+                            />
+                            {profileErrors.email && (
+                                <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <InputField
+                                label="Số điện thoại"
+                                name="phone"
+                                control={profileControl}
+                                defaultValue={profile.phone || ""}
+                            />
+                            {profileErrors.phone && (
+                                <p className="text-red-500 text-sm mt-1">{profileErrors.phone.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <InputField
+                                label="Ngày sinh"
+                                name="birthDate"
+                                type="date"
+                                control={profileControl}
+                                defaultValue={profile.birthDate 
+                                    ? new Date(profile.birthDate).toISOString().split('T')[0] 
+                                    : new Date().toISOString().split('T')[0]}
+                            />
+                            {profileErrors.birthDate && (
+                                <p className="text-red-500 text-sm mt-1">{profileErrors.birthDate.message}</p>
+                            )}
+                        </div>
+
                         <div>
                             <label className="text-sm text-gray-300 block mb-2">Giới tính</label>
                             <select
@@ -208,7 +237,11 @@ const UserProfile = () => {
                                 <option value="female">Nữ</option>
                                 <option value="other">Khác</option>
                             </select>
+                            {profileErrors.gender && (
+                                <p className="text-red-500 text-sm mt-1">{profileErrors.gender.message}</p>
+                            )}
                         </div>
+
                         <div className="flex gap-4 mt-6">
                             <Button2 type="submit" className="flex-1 h-[40px]">
                                 Lưu thay đổi
@@ -237,10 +270,11 @@ const UserProfile = () => {
                             <span className="font-semibold">Số điện thoại:</span> {profile.phone || "Chưa cập nhật"}
                         </div>
                         <div className="mb-4">
-                            <span className="font-semibold">Địa chỉ:</span> {profile.address || "Chưa cập nhật"}
-                        </div>
-                        <div className="mb-4">
-                            <span className="font-semibold">Ngày sinh:</span> {profile.birthDate ? new Date(profile.birthDate).toLocaleDateString() : "Chưa cập nhật"}
+                            <span className="font-semibold">Ngày sinh:</span> {
+                                profile.birthDate 
+                                    ? new Date(profile.birthDate).toLocaleDateString() 
+                                    : "Chưa cập nhật"
+                            }
                         </div>
                         <div className="mb-4">
                             <span className="font-semibold">Giới tính:</span> {
