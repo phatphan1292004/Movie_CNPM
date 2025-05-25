@@ -8,15 +8,13 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axiosClient from "../axios/axiosClient";
 import { NavLink } from "react-router-dom";
-//8.7.6. Validation thông tin:
+//8.7.6. Validation thông tin (UserProfile.jsx):
 const profileSchema = yup.object({
   name: yup.string().required("Vui lòng nhập họ và tên"),
   email: yup.string().email("Email không hợp lệ").required("Vui lòng nhập email"),
   phone: yup.string().matches(/^[0-9]{10}$/, "Số điện thoại không hợp lệ"),
-  birthDate: yup.date()
-    .nullable()
-    .transform((value) => (value === "" ? null : value))
-    .max(new Date(), "Ngày sinh không hợp lệ"),
+  address: yup.string(),
+  birthDate: yup.date().max(new Date(), "Ngày sinh không hợp lệ"),
   gender: yup.string().oneOf(["male", "female", "other"], "Vui lòng chọn giới tính")
 });
 //8.7.7. Validation mật khẩu (UserProfile.jsx):
@@ -37,10 +35,11 @@ const passwordSchema = yup.object({
 });
 
 const UserProfile = () => {
+    //8.7.1. Kiểm tra đăng nhập thông qua useUserStore
     const { user, setUser } = useUserStore();
     const [profile, setProfile] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    //8.7.3. Chuyển đổi tab (UserProfile.jsx)
+    //8.7.5. Chuyển đổi tab
     const [activeTab, setActiveTab] = useState("profile"); // "profile" or "password"
 
     const {
@@ -54,11 +53,10 @@ const UserProfile = () => {
             name: "",
             email: "",
             phone: "",
-            birthDate: new Date().toISOString().split('T')[0],
+            address: "",
+            birthDate: "",
             gender: ""
-        },
-        mode: "onChange",
-        reValidateMode: "onChange"
+        }
     });
 
     const {
@@ -72,90 +70,95 @@ const UserProfile = () => {
             currentPassword: "",
             newPassword: "",
             confirmPassword: ""
-        },
-        mode: "onChange",
-        reValidateMode: "onChange"
+        }
     });
-    //8.7.2. Lấy thông tin user
+
+    //8.7.2. Lấy thông tin user từ API
     useEffect(() => {
         const fetchProfile = async () => {
             if (!user?.id) return;
             try {
                 const res = await axiosClient.get(`/users/${user.id}`);
+                //8.7.3. Cập nhật state profile và reset form
                 setProfile(res.data);
                 resetProfile({
                     name: res.data.name,
                     email: res.data.email,
                     phone: res.data.phone || "",
-                    birthDate: res.data.birthDate || new Date().toISOString().split('T')[0],
+                    address: res.data.address || "",
+                    birthDate: res.data.birthDate || "",
                     gender: res.data.gender || ""
                 });
             } catch (error) {
+                //8.7.9.1. Bắt lỗi từ try-catch
+                //8.7.9.2. Hiển thị thông báo lỗi phù hợp qua toast
                 toast.error("Không thể tải thông tin người dùng");
                 setProfile(null);
             }
         };
         fetchProfile();
     }, [user, resetProfile]);
-//8.7.4. Cập nhật thông tin cá nhân :
-    const handleUpdateProfile = async (data) => {
-        // Validate trước khi gửi request
-        try {
-            await profileSchema.validate(data, { abortEarly: false });
-        } catch (err) {
-            console.log('Validation Error:', err);
-            return;
-        }
 
+    //8.7.7. Cập nhật thông tin cá nhân
+    const handleUpdateProfile = async (data) => {
         try {
+            //8.7.7.1. Validate dữ liệu qua profileSchema
+            //8.7.7.2. Gửi request cập nhật
             const res = await axiosClient.put(`/users/${user.id}`, data);
+            //8.7.7.3. Cập nhật state local và global
             setProfile(res.data);
             setUser({...user, ...res.data});
             setIsEditing(false);
+            //8.7.7.4. Hiển thị thông báo kết quả
             toast.success("Cập nhật thông tin thành công!");
         } catch (error) {
+            //8.7.9.1. Bắt lỗi từ try-catch
+            //8.7.9.2. Hiển thị thông báo lỗi phù hợp qua toast
+            //8.7.9.3. Giữ nguyên trạng thái form
             toast.error(error.response?.data?.message || "Cập nhật thất bại");
         }
     };
-//8.7.5. Đổi mật khẩu (UserProfile.jsx):
+
+    //8.7.8. Đổi mật khẩu
     const handleChangePassword = async (data) => {
-        // Validate trước khi gửi request
         try {
-            await passwordSchema.validate(data, { abortEarly: false });
-        } catch (err) {
-            console.log('Validation Error:', err);
-            return;
-        }
-        try {
-            const response = await axiosClient.put(`/users/${user.id}/password`, {
+            //8.7.8.1. Validate mật khẩu qua passwordSchema
+            //8.7.8.2. Gửi request đổi mật khẩu
+            await axiosClient.put(`/users/${user.id}/password`, {
                 currentPassword: data.currentPassword,
                 newPassword: data.newPassword
             });
-            
+            //8.7.8.3. Reset form đổi mật khẩu
             resetPassword();
+            //8.7.8.4. Hiển thị thông báo kết quả
             toast.success("Đổi mật khẩu thành công!");
         } catch (error) {
+            //8.7.9.1. Bắt lỗi từ try-catch
+            //8.7.9.2. Hiển thị thông báo lỗi phù hợp qua toast
+            //8.7.9.3. Giữ nguyên trạng thái form
             toast.error(error.response?.data?.message || "Đổi mật khẩu thất bại");
         }
     };
-    //8.7.1. User mở trang "Thông tin cá nhân" và hệ thống kiểm tra trạng thái đăng nhập.
+
+    //8.7.1. Kiểm tra đăng nhập
     if (!user) {
         return <div className="text-center text-red-500">Bạn chưa đăng nhập!</div>;
     }
-    if (!profile) { 
+    if (!profile) {
         return <div className="text-center text-gray-400">Đang tải thông tin...</div>;
     }
+
     return (
         <div className="max-w-2xl mx-auto mt-10 bg-gray-800 text-white p-8 rounded-xl shadow-lg">
+            {/* 8.7.10. Nút quay về trang chủ */}
             <NavLink to="/" className="fixed left-2 top-2 z-50">
-            {/* //8.7.10. Button Quay về trang chủ: */}
                 <Button2 className="!w-auto !px-4 !py-2 text-sm bg-blue-600 hover:bg-blue-700">
                     ← Quay về trang chủ
                 </Button2>
             </NavLink>
             <h2 className="text-2xl font-bold mb-6 text-center">Thông tin tài khoản</h2>
-            {/* //8.7.3. Chuyển đổi tab /}
-            {/* Tabs */}
+            
+            {/* 8.7.4. Hiển thị 2 tab */}
             <div className="flex border-b border-gray-700 mb-6">
                 <button
                     className={`px-4 py-2 ${activeTab === "profile" ? "border-b-2 border-primary" : "text-gray-400"}`}
@@ -170,61 +173,41 @@ const UserProfile = () => {
                     Đổi mật khẩu
                 </button>
             </div>
-
+            //8.7.9. Form chỉnh sửa thông tin:
             {activeTab === "profile" ? (
                 isEditing ? (
                     <form onSubmit={handleProfileSubmit(handleUpdateProfile)} className="space-y-4">
-                        <div>
-                            <InputField
-                                label="Họ tên"
-                                name="name"
-                                control={profileControl}
-                                defaultValue={profile.name}
-                            />
-                            {profileErrors.name && (
-                                <p className="text-red-500 text-sm mt-1">{profileErrors.name.message}</p>
-                            )}
-                        </div>
-
-                        <div>
-                            <InputField
-                                label="Email"
-                                name="email"
-                                control={profileControl}
-                                defaultValue={profile.email}
-                            />
-                            {profileErrors.email && (
-                                <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>
-                            )}
-                        </div>
-
-                        <div>
-                            <InputField
-                                label="Số điện thoại"
-                                name="phone"
-                                control={profileControl}
-                                defaultValue={profile.phone || ""}
-                            />
-                            {profileErrors.phone && (
-                                <p className="text-red-500 text-sm mt-1">{profileErrors.phone.message}</p>
-                            )}
-                        </div>
-
-                        <div>
-                            <InputField
-                                label="Ngày sinh"
-                                name="birthDate"
-                                type="date"
-                                control={profileControl}
-                                defaultValue={profile.birthDate 
-                                    ? new Date(profile.birthDate).toISOString().split('T')[0] 
-                                    : new Date().toISOString().split('T')[0]}
-                            />
-                            {profileErrors.birthDate && (
-                                <p className="text-red-500 text-sm mt-1">{profileErrors.birthDate.message}</p>
-                            )}
-                        </div>
-
+                        <InputField
+                            label="Họ tên"
+                            name="name"
+                            control={profileControl}
+                            defaultValue={profile.name}
+                        />
+                        <InputField
+                            label="Email"
+                            name="email"
+                            control={profileControl}
+                            defaultValue={profile.email}
+                        />
+                        <InputField
+                            label="Số điện thoại"
+                            name="phone"
+                            control={profileControl}
+                            defaultValue={profile.phone || ""}
+                        />
+                        <InputField
+                            label="Địa chỉ"
+                            name="address"
+                            control={profileControl}
+                            defaultValue={profile.address || ""}
+                        />
+                        <InputField
+                            label="Ngày sinh"
+                            name="birthDate"
+                            type="date"
+                            control={profileControl}
+                            defaultValue={profile.birthDate || ""}
+                        />
                         <div>
                             <label className="text-sm text-gray-300 block mb-2">Giới tính</label>
                             <select
@@ -237,11 +220,7 @@ const UserProfile = () => {
                                 <option value="female">Nữ</option>
                                 <option value="other">Khác</option>
                             </select>
-                            {profileErrors.gender && (
-                                <p className="text-red-500 text-sm mt-1">{profileErrors.gender.message}</p>
-                            )}
                         </div>
-
                         <div className="flex gap-4 mt-6">
                             <Button2 type="submit" className="flex-1 h-[40px]">
                                 Lưu thay đổi
@@ -270,11 +249,10 @@ const UserProfile = () => {
                             <span className="font-semibold">Số điện thoại:</span> {profile.phone || "Chưa cập nhật"}
                         </div>
                         <div className="mb-4">
-                            <span className="font-semibold">Ngày sinh:</span> {
-                                profile.birthDate 
-                                    ? new Date(profile.birthDate).toLocaleDateString() 
-                                    : "Chưa cập nhật"
-                            }
+                            <span className="font-semibold">Địa chỉ:</span> {profile.address || "Chưa cập nhật"}
+                        </div>
+                        <div className="mb-4">
+                            <span className="font-semibold">Ngày sinh:</span> {profile.birthDate ? new Date(profile.birthDate).toLocaleDateString() : "Chưa cập nhật"}
                         </div>
                         <div className="mb-4">
                             <span className="font-semibold">Giới tính:</span> {
@@ -299,42 +277,24 @@ const UserProfile = () => {
                 )
             ) : (
                 <form onSubmit={handlePasswordSubmit(handleChangePassword)} className="space-y-4">
-                    <div>
-                        <InputField
-                            label="Mật khẩu hiện tại"
-                            name="currentPassword"
-                            type="password"
-                            control={passwordControl}
-                        />
-                        {passwordErrors.currentPassword && (
-                            <p className="text-red-500 text-sm mt-1">{passwordErrors.currentPassword.message}</p>
-                        )}
-                    </div>
-                    
-                    <div>
-                        <InputField
-                            label="Mật khẩu mới"
-                            name="newPassword"
-                            type="password"
-                            control={passwordControl}
-                        />
-                        {passwordErrors.newPassword && (
-                            <p className="text-red-500 text-sm mt-1">{passwordErrors.newPassword.message}</p>
-                        )}
-                    </div>
-                    
-                    <div>
-                        <InputField
-                            label="Xác nhận mật khẩu mới"
-                            name="confirmPassword"
-                            type="password"
-                            control={passwordControl}
-                        />
-                        {passwordErrors.confirmPassword && (
-                            <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmPassword.message}</p>
-                        )}
-                    </div>
-                    
+                    <InputField
+                        label="Mật khẩu hiện tại"
+                        name="currentPassword"
+                        type="password"
+                        control={passwordControl}
+                    />
+                    <InputField
+                        label="Mật khẩu mới"
+                        name="newPassword"
+                        type="password"
+                        control={passwordControl}
+                    />
+                    <InputField
+                        label="Xác nhận mật khẩu mới"
+                        name="confirmPassword"
+                        type="password"
+                        control={passwordControl}
+                    />
                     <Button2 type="submit" className="w-full mt-6 h-[55px]">
                         Đổi mật khẩu
                     </Button2>
