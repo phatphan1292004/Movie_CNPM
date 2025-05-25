@@ -173,7 +173,7 @@ const UserProfile = () => {
                     Đổi mật khẩu
                 </button>
             </div>
-            //8.7.9. Form chỉnh sửa thông tin:
+            {/* //8.7.9. Form chỉnh sửa thông tin: */}
             {activeTab === "profile" ? (
                 isEditing ? (
                     <form onSubmit={handleProfileSubmit(handleUpdateProfile)} className="space-y-4">
