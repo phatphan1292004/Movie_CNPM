@@ -99,7 +99,7 @@ router.get("/users/:id", async (req, res) => {
 // Update user profile
 router.put("/users/:id", async (req, res) => {
   try {
-    const { name, email, phone, address, birthDate, gender } = req.body;
+    const { name, email, phone, birthDate, gender } = req.body;
     
     // Kiểm tra email đã tồn tại chưa (nếu email thay đổi)
     if (email) {
@@ -111,7 +111,7 @@ router.put("/users/:id", async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { name, email, phone, address, birthDate, gender },
+      { name, email, phone, birthDate, gender },
       { new: true }
     ).select('-password');
 
