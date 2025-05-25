@@ -8,7 +8,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axiosClient from "../axios/axiosClient";
 import { NavLink } from "react-router-dom";
-
+//8.7.6. Validation thông tin:
 const profileSchema = yup.object({
   name: yup.string().required("Vui lòng nhập họ và tên"),
   email: yup.string().email("Email không hợp lệ").required("Vui lòng nhập email"),
@@ -17,7 +17,7 @@ const profileSchema = yup.object({
   birthDate: yup.date().max(new Date(), "Ngày sinh không hợp lệ"),
   gender: yup.string().oneOf(["male", "female", "other"], "Vui lòng chọn giới tính")
 });
-
+//8.7.7. Validation mật khẩu (UserProfile.jsx):
 const passwordSchema = yup.object({
   currentPassword: yup.string().required("Vui lòng nhập mật khẩu hiện tại"),
   newPassword: yup
@@ -38,6 +38,7 @@ const UserProfile = () => {
     const { user, setUser } = useUserStore();
     const [profile, setProfile] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    //8.7.3. Chuyển đổi tab (UserProfile.jsx)
     const [activeTab, setActiveTab] = useState("profile"); // "profile" or "password"
 
     const {
@@ -68,9 +69,11 @@ const UserProfile = () => {
             currentPassword: "",
             newPassword: "",
             confirmPassword: ""
-        }
+        },
+        mode: "onChange",
+        reValidateMode: "onChange"
     });
-
+    //8.7.2. Lấy thông tin user
     useEffect(() => {
         const fetchProfile = async () => {
             if (!user?.id) return;
@@ -92,7 +95,7 @@ const UserProfile = () => {
         };
         fetchProfile();
     }, [user, resetProfile]);
-
+//8.7.4. Cập nhật thông tin cá nhân :
     const handleUpdateProfile = async (data) => {
         try {
             const res = await axiosClient.put(`/users/${user.id}`, data);
@@ -104,36 +107,45 @@ const UserProfile = () => {
             toast.error(error.response?.data?.message || "Cập nhật thất bại");
         }
     };
-
+//8.7.5. Đổi mật khẩu (UserProfile.jsx):
     const handleChangePassword = async (data) => {
+        // Validate trước khi gửi request
         try {
-            await axiosClient.put(`/users/${user.id}/password`, {
+            await passwordSchema.validate(data, { abortEarly: false });
+        } catch (err) {
+            console.log('Validation Error:', err);
+            return;
+        }
+
+        try {
+            const response = await axiosClient.put(`/users/${user.id}/password`, {
                 currentPassword: data.currentPassword,
                 newPassword: data.newPassword
             });
+            
             resetPassword();
             toast.success("Đổi mật khẩu thành công!");
         } catch (error) {
             toast.error(error.response?.data?.message || "Đổi mật khẩu thất bại");
         }
     };
-
+    //8.7.1. User mở trang "Thông tin cá nhân" và hệ thống kiểm tra trạng thái đăng nhập.
     if (!user) {
         return <div className="text-center text-red-500">Bạn chưa đăng nhập!</div>;
     }
-    if (!profile) {
+    if (!profile) { 
         return <div className="text-center text-gray-400">Đang tải thông tin...</div>;
     }
-
     return (
         <div className="max-w-2xl mx-auto mt-10 bg-gray-800 text-white p-8 rounded-xl shadow-lg">
             <NavLink to="/" className="fixed left-2 top-2 z-50">
+            {/* //8.7.10. Button Quay về trang chủ: */}
                 <Button2 className="!w-auto !px-4 !py-2 text-sm bg-blue-600 hover:bg-blue-700">
                     ← Quay về trang chủ
                 </Button2>
             </NavLink>
             <h2 className="text-2xl font-bold mb-6 text-center">Thông tin tài khoản</h2>
-            
+            {/* //8.7.3. Chuyển đổi tab (UserProfile.jsx) */}
             {/* Tabs */}
             <div className="flex border-b border-gray-700 mb-6">
                 <button
@@ -253,24 +265,42 @@ const UserProfile = () => {
                 )
             ) : (
                 <form onSubmit={handlePasswordSubmit(handleChangePassword)} className="space-y-4">
-                    <InputField
-                        label="Mật khẩu hiện tại"
-                        name="currentPassword"
-                        type="password"
-                        control={passwordControl}
-                    />
-                    <InputField
-                        label="Mật khẩu mới"
-                        name="newPassword"
-                        type="password"
-                        control={passwordControl}
-                    />
-                    <InputField
-                        label="Xác nhận mật khẩu mới"
-                        name="confirmPassword"
-                        type="password"
-                        control={passwordControl}
-                    />
+                    <div>
+                        <InputField
+                            label="Mật khẩu hiện tại"
+                            name="currentPassword"
+                            type="password"
+                            control={passwordControl}
+                        />
+                        {passwordErrors.currentPassword && (
+                            <p className="text-red-500 text-sm mt-1">{passwordErrors.currentPassword.message}</p>
+                        )}
+                    </div>
+                    
+                    <div>
+                        <InputField
+                            label="Mật khẩu mới"
+                            name="newPassword"
+                            type="password"
+                            control={passwordControl}
+                        />
+                        {passwordErrors.newPassword && (
+                            <p className="text-red-500 text-sm mt-1">{passwordErrors.newPassword.message}</p>
+                        )}
+                    </div>
+                    
+                    <div>
+                        <InputField
+                            label="Xác nhận mật khẩu mới"
+                            name="confirmPassword"
+                            type="password"
+                            control={passwordControl}
+                        />
+                        {passwordErrors.confirmPassword && (
+                            <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmPassword.message}</p>
+                        )}
+                    </div>
+                    
                     <Button2 type="submit" className="w-full mt-6 h-[55px]">
                         Đổi mật khẩu
                     </Button2>
@@ -279,5 +309,4 @@ const UserProfile = () => {
         </div>
     );
 };
-
 export default UserProfile;
