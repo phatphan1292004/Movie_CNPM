@@ -13,7 +13,6 @@ const profileSchema = yup.object({
   name: yup.string().required("Vui lòng nhập họ và tên"),
   email: yup.string().email("Email không hợp lệ").required("Vui lòng nhập email"),
   phone: yup.string().matches(/^[0-9]{10}$/, "Số điện thoại không hợp lệ"),
-  address: yup.string(),
   birthDate: yup.date().max(new Date(), "Ngày sinh không hợp lệ"),
   gender: yup.string().oneOf(["male", "female", "other"], "Vui lòng chọn giới tính")
 });
@@ -53,7 +52,6 @@ const UserProfile = () => {
             name: "",
             email: "",
             phone: "",
-            address: "",
             birthDate: "",
             gender: ""
         }
@@ -85,7 +83,6 @@ const UserProfile = () => {
                     name: res.data.name,
                     email: res.data.email,
                     phone: res.data.phone || "",
-                    address: res.data.address || "",
                     birthDate: res.data.birthDate || "",
                     gender: res.data.gender || ""
                 });
@@ -196,12 +193,6 @@ const UserProfile = () => {
                             defaultValue={profile.phone || ""}
                         />
                         <InputField
-                            label="Địa chỉ"
-                            name="address"
-                            control={profileControl}
-                            defaultValue={profile.address || ""}
-                        />
-                        <InputField
                             label="Ngày sinh"
                             name="birthDate"
                             type="date"
@@ -247,9 +238,6 @@ const UserProfile = () => {
                         </div>
                         <div className="mb-4">
                             <span className="font-semibold">Số điện thoại:</span> {profile.phone || "Chưa cập nhật"}
-                        </div>
-                        <div className="mb-4">
-                            <span className="font-semibold">Địa chỉ:</span> {profile.address || "Chưa cập nhật"}
                         </div>
                         <div className="mb-4">
                             <span className="font-semibold">Ngày sinh:</span> {profile.birthDate ? new Date(profile.birthDate).toLocaleDateString() : "Chưa cập nhật"}
