@@ -24,6 +24,22 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    phone: {
+      type: String,
+      trim: true,
+      match: [/^[0-9]{10}$/, "Số điện thoại không hợp lệ"]
+    },
+    address: {
+      type: String,
+      trim: true
+    },
+    birthDate: {
+      type: Date
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"]
+    },
     role: {
       type: String,
       enum: ["user", "admin"],

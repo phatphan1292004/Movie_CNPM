@@ -54,7 +54,7 @@ function App() {
             </PrivateRoute>
           }
         ></Route>
-        {/* ✅ Route mới cho trang tìm kiếm */}
+        {/* Route mới cho trang tìm kiếm */}
         <Route path="/search" element={<SearchPage />} />
       </Routes>
       <ToastContainer />
